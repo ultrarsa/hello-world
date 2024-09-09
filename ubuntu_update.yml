@@ -1,0 +1,15 @@
+---
+- name: Update and upgrade packages on Ubuntu/Debian systems
+  hosts: all
+  become: yes  # 確保以 root 權限執行
+  tasks:
+    - name: Update the apt package index
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages (dist-upgrade)
+      apt:
+        upgrade: dist
+        force_apt_get: yes
+        autoremove: yes
+        autoclean: yes
