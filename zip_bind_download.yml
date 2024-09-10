@@ -5,7 +5,7 @@
   vars:
     current_date: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"  # 獲取當前日期
     local_user: "{{ lookup('env', 'USERNAME') }}"  # 獲取本地端使用者名稱
-    local_dest: "C:/Users/{{ local_user }}/Desktop"  # 本地端桌面路徑
+    local_dest: "D:\"  # 本地端桌面路徑
     remote_file: "/tmp/bind_backup_{{ current_date }}.tar.gz"  # 遠端壓縮檔案路徑
   tasks:
     - name: Display message - Starting the playbook
