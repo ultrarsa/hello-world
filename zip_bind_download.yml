@@ -17,10 +17,10 @@
         dest: "/tmp/bind_backup_{{ current_date }}.zip"
         format: zip
 
-    - name: Download the compressed file to the local machine
+    - name: Download the compressed file to the local machine (Windows Desktop)
       fetch:
         src: "/tmp/bind_backup_{{ current_date }}.zip"
-        dest: "~/backups/"
+        dest: "{{ lookup('env', 'USERPROFILE') }}\\Desktop\\"
         flat: yes
 
     - name: Remove the compressed file from the remote host
