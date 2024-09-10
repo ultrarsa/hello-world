@@ -1,0 +1,29 @@
+---
+- name: Compress bind directory with date and download to local machine
+  hosts: all
+  become: yes
+  vars:
+    current_date: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"  # 獲取當前日期
+  tasks:
+    - name: Ensure zip package is installed
+      apt:
+        name: zip
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Compress /etc/bind directory into /tmp/bind_backup_{{ current_date }}.zip
+      archive:
+        path: /etc/bind
+        dest: "/tmp/bind_backup_{{ current_date }}.zip"
+        format: zip
+
+    - name: Download the compressed file to the local machine
+      fetch:
+        src: "/tmp/bind_backup_{{ current_date }}.zip"
+        dest: "~/backups/"
+        flat: yes
+
+    - name: Remove the compressed file from the remote host
+      file:
+        path: "/tmp/bind_backup_{{ current_date }}.zip"
+        state: absent
