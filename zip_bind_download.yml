@@ -5,25 +5,61 @@
   vars:
     current_date: "{{ lookup('pipe', 'date +%Y-%m-%d') }}"  # 獲取當前日期
   tasks:
+    - name: Display message - Starting the playbook
+      debug:
+        msg: "Starting the playbook to compress /etc/bind and download it to the local machine."
+
     - name: Ensure zip package is installed
       apt:
         name: zip
         state: present
       when: ansible_facts['os_family'] == "Debian"
+      register: install_zip
+
+    - name: Display message - zip package installation result
+      debug:
+        msg: "zip package installation result: {{ install_zip }}"
+
+    - name: Display message - Compressing the /etc/bind directory
+      debug:
+        msg: "Compressing the /etc/bind directory into /tmp/bind_backup_{{ current_date }}.zip on the remote host."
 
     - name: Compress /etc/bind directory into /tmp/bind_backup_{{ current_date }}.zip
       archive:
         path: /etc/bind
         dest: "/tmp/bind_backup_{{ current_date }}.zip"
         format: zip
+      register: compress_result
+
+    - name: Display message - Compression completed
+      debug:
+        msg: "Compression completed. Result: {{ compress_result }}"
+
+    - name: Display message - Downloading the compressed file
+      debug:
+        msg: "Downloading the compressed file to the local machine (Windows Desktop)."
 
     - name: Download the compressed file to the local machine (Windows Desktop)
       fetch:
         src: "/tmp/bind_backup_{{ current_date }}.zip"
         dest: "{{ lookup('env', 'USERPROFILE') }}\\Desktop\\"
         flat: yes
+      register: fetch_result
+
+    - name: Display message - File download completed
+      debug:
+        msg: "File download completed. Result: {{ fetch_result }}"
+
+    - name: Display message - Removing the compressed file from remote host
+      debug:
+        msg: "Removing the compressed file from the remote host."
 
     - name: Remove the compressed file from the remote host
       file:
         path: "/tmp/bind_backup_{{ current_date }}.zip"
         state: absent
+      register: remove_result
+
+    - name: Display message - File removal completed
+      debug:
+        msg: "File removal from remote host completed. Result: {{ remove_result }}"
